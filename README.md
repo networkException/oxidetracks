@@ -4,11 +4,11 @@ An opinionated reimplementation of [owntracks/recorder](https://github.com/owntr
 
 # Opinionated?
 
-This project aims to provide a backend implementation compatible with owntracks clients,
-compatibility with the storage format of recorder and a diverging set of features should
-be expected in the future.
+While this project aims to provide a backend implementation compatible with owntracks clients,
+compatibility with the recorder storage format is expected to break and the set of supported
+features will likely diverge.
 
-oxidetracks does not support MQTT
+oxidetracks does not support MQTT.
 
 # Running
 
