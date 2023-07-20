@@ -9,3 +9,9 @@ compatibility with the storage format of recorder and a diverging set of feature
 be expected in the future.
 
 oxidetracks does not support MQTT
+
+# Running
+
+```
+cargo run --release -- --storage-path /path/to/your/owntracks/recorder/storage-directory
+```
