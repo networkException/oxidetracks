@@ -1,7 +1,11 @@
 [package]
 name = "oxidetracks"
+description = "An opinionated reimplementation of owntracks/recorder"
 version = "0.1.0"
 edition = "2021"
+authors = ["networkException <git@nwex.de>"]
+license = "BSD-2-Clause"
+repository = "https://github.com/networkException/oxidetracks"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
