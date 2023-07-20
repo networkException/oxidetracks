@@ -12,6 +12,6 @@ oxidetracks does not support MQTT.
 
 # Running
 
-```
+```shell
 cargo run --release -- --storage-path /path/to/your/owntracks/recorder/storage-directory
 ```
