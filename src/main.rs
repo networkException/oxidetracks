@@ -3,7 +3,7 @@ mod location;
 
 use anyhow::Result;
 use chrono::{DateTime, Utc};
-use log::info;
+use log::{info, error};
 use macros::IntoJsonResponse;
 
 use location::Location;
@@ -149,13 +149,17 @@ struct Arguments {
     /// The path to storage
     #[arg(short, long, env)]
     storage_path: PathBuf,
+
+    /// The address to bind to
+    #[clap(short, long, env, default_value = "[::]:3000")]
+    bind: String,
 }
 
 #[tokio::main]
 async fn main() {
     env_logger::init_from_env(env_logger::Env::default().filter_or(env_logger::DEFAULT_FILTER_ENV, "info"));
 
-    let Arguments { storage_path } = Arguments::parse();
+    let Arguments { storage_path, bind } = Arguments::parse();
 
     let mut storage = Storage::new(storage_path);
 
@@ -174,7 +178,14 @@ async fn main() {
         .layer(ServiceBuilder::new()
             .layer(CorsLayer::permissive()));
 
-    Server::bind(&"0.0.0.0:3000".parse().unwrap())
+    let Ok(socket_address) = bind.parse() else {
+        error!(target: "API", "Unable to parse '{}' as socket address", bind);
+        return;
+    };
+
+    info!(target: "API", "Listening on {}", socket_address);
+
+    Server::bind(&socket_address)
         .serve(app.into_make_service())
         .await
         .unwrap();
