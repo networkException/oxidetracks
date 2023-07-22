@@ -94,17 +94,17 @@ pub enum Trigger {
 pub struct Location {
     // Accuracy of the reported location in meters without unit
     // (iOS,Android/integer/meters/optional)
-    #[serde(rename = "acc")]
+    #[serde(rename = "acc", skip_serializing_if = "Option::is_none")]
     pub accuracy: Option<u32>,
 
     // Altitude measured above sea level
     // (iOS,Android/integer/meters/optional)
-    #[serde(rename = "alt")]
+    #[serde(rename = "alt", skip_serializing_if = "Option::is_none")]
     pub altitude: Option<i32>,
 
     // Device battery level
     // (iOS,Android/integer/percent/optional)
-    #[serde(rename = "batt")]
+    #[serde(rename = "batt", skip_serializing_if = "Option::is_none")]
     pub battery: Option<u8>,
 
     // Battery Status
@@ -114,7 +114,7 @@ pub struct Location {
 
     // Course over ground
     // (iOS/integer/degree/optional)
-    #[serde(rename = "cog")]
+    #[serde(rename = "cog", skip_serializing_if = "Option::is_none")]
     pub course: Option<u16>,
 
     // latitude
@@ -129,17 +129,17 @@ pub struct Location {
 
     // radius around the region when entering/leaving
     // (iOS/integer/meters/optional)
-    #[serde(rename = "rad")]
+    #[serde(rename = "rad", skip_serializing_if = "Option::is_none")]
     pub region_radius: Option<u32>,
 
     // trigger for the location report
     // (iOS,Android/string/optional)
-    #[serde(rename = "t")]
+    #[serde(rename = "t", skip_serializing_if = "Option::is_none")]
     pub trigger: Option<Trigger>,
 
     // Tracker ID used to display the initials of a user
     // (iOS,Android/string/optional) required for http mode
-    #[serde(rename = "tid")]
+    #[serde(rename = "tid", skip_serializing_if = "Option::is_none")]
     pub tracker_id: Option<String>,
 
     // UNIX epoch timestamp in seconds of the location fix
@@ -149,56 +149,58 @@ pub struct Location {
 
     // vertical accuracy of the alt element
     // (iOS/integer/meters/optional)
-    #[serde(rename = "vac")]
+    #[serde(rename = "vac", skip_serializing_if = "Option::is_none")]
     pub vertical_accuracy: Option<u32>,
 
     // velocity
     // (iOS,Android/integer/kmh/optional)
-    #[serde(rename = "vel")]
+    #[serde(rename = "vel", skip_serializing_if = "Option::is_none")]
     pub velocity: Option<u32>,
 
     // barometric pressure
     // (iOS/float/kPa/optional/extended data)
-    #[serde(rename = "p")]
+    #[serde(rename = "p", skip_serializing_if = "Option::is_none")]
     pub barometric_pressure: Option<f32>,
 
     // point of interest name
     // (iOS/string/optional)
-    #[serde(rename = "poi")]
+    #[serde(rename = "poi", skip_serializing_if = "Option::is_none")]
     pub point_of_interest_name: Option<String>,
 
     // Internet connectivity status (route to host) when the message is created
     // (iOS,Android/string/optional/extended data)
-    #[serde(flatten)]
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub connection: Option<Connection>,
 
     // name of the tag
     // (iOS/string/optional)
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<String>,
 
     // (only in HTTP payloads) contains the original publish topic (e.g. owntracks/jane/phone).
     // (iOS,Android >= 2.4,string)
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub topic: Option<String>,
 
     // contains a list of regions the device is currently in (e.g. ["Home","Garage"]). Might be empty.
     // (iOS,Android/list of strings/optional)
-    #[serde(rename = "inregions")]
+    #[serde(rename = "inregions", skip_serializing_if = "Option::is_none")]
     pub in_regions: Option<Vec<String>>,
 
     // contains a list of region IDs the device is currently in (e.g. ["6da9cf","3defa7"]). Might be empty.
     // (iOS,Android/list of strings/optional)
-    #[serde(rename = "inrids")]
+    #[serde(rename = "inrids", skip_serializing_if = "Option::is_none")]
     pub in_region_ids: Option<Vec<String>>,
 
     // identifies the time at which the message is constructed (vs. tst which is the timestamp of the GPS fix)
     // (iOS,Android)
     // NOTE: Even though this is not documented as such, this field appears to be optional (at least
     //       given my location history created with the iOS client).
-    #[serde(with = "ts_seconds_option", default)]
+    #[serde(with = "ts_seconds_option", default, skip_serializing_if = "Option::is_none")]
     pub created_at: Option<DateTime<Utc>>,
 
     // identifies the monitoring mode at which the message is constructed
     // (iOS/integer/optional)
-    #[serde(rename = "m")]
+    #[serde(rename = "m", skip_serializing_if = "Option::is_none")]
     pub monitoring_mode: Option<MonitoringMode>,
 }
