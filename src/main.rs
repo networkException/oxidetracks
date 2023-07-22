@@ -7,6 +7,7 @@ use log::{info, error};
 use macros::IntoJsonResponse;
 
 use location::Location;
+use serde_json::Value;
 use storage::Storage;
 use tower::ServiceBuilder;
 use tower_http::cors::CorsLayer;
@@ -74,7 +75,7 @@ async fn get_list(State(app_state): State<AppState>, Query(query): Query<ListQue
     }
 }
 
-type LastResponse = Json<Vec<Location>>;
+type LastResponse = Json<Vec<Value>>;
 
 async fn get_last(State(app_state): State<AppState>) -> Result<LastResponse, ErrorResponse> {
     let storage = &app_state.storage.lock()
@@ -83,10 +84,17 @@ async fn get_last(State(app_state): State<AppState>) -> Result<LastResponse, Err
     Ok(Json(storage.users().iter()
         .flat_map(|(user_name, user_storage)| user_storage.devices().iter()
             .filter(|(_, device_storage)| device_storage.last_location().is_some())
-            .map(|(device_name, device_storage)| device_storage.last_location().clone())
-            .flatten()
-            .map(|location| location.clone()))
-        .collect()))
+            .map(|(device_name, device_storage)| {
+                let location = device_storage.last_location().unwrap();
+
+                let mut json = serde_json::to_value(location).unwrap();
+                let json_object = json.as_object_mut().unwrap();
+
+                json_object.insert("username".to_owned(), user_name.clone().into());
+                json_object.insert("device".to_owned(), device_name.clone().into());
+
+                json
+            })).collect()))
 }
 
 #[derive(Deserialize)]
