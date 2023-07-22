@@ -109,6 +109,10 @@ impl Storage {
                     for line in BufReader::new(&history_file).lines() {
                         let line = line?;
 
+                        if line.trim().is_empty() {
+                            continue;
+                        }
+
                         // Same as location.timestamp apparently.
                         let _: String = line.chars().take_while(|char| char != &'\t').collect();
                         let json: String = line.chars().skip_while(|char| char != &'{').collect();
