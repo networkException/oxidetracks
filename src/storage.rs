@@ -6,7 +6,7 @@ use std::fs::{self, OpenOptions};
 use std::io::{prelude::*, BufReader};
 
 use anyhow::{ensure, Result};
-use log::{debug, info};
+use log::{debug, info, error};
 
 use crate::location::Location;
 
@@ -101,10 +101,11 @@ impl Storage {
                 let history_directory_for_user_and_device = history_directory.join(user_name).join(device_name);
 
                 for history_for_user_and_device_in_month in history_directory_for_user_and_device.read_dir()? {
+                    let path = history_for_user_and_device_in_month?.path();
                     let history_file = OpenOptions::new()
                         .append(true)
                         .read(true)
-                        .open(history_for_user_and_device_in_month?.path())?;
+                        .open(&path)?;
 
                     for line in BufReader::new(&history_file).lines() {
                         let line = line?;
@@ -117,7 +118,13 @@ impl Storage {
                         let _: String = line.chars().take_while(|char| char != &'\t').collect();
                         let json: String = line.chars().skip_while(|char| char != &'{').collect();
 
-                        let location: Location = serde_json::from_str(&json)?;
+                        let location = match serde_json::from_str(&json) {
+                            Ok(location) => location,
+                            Err(error) => {
+                                error!(target: "Storage", "Unable to parse '{}' as location in {}: {}", json, path.to_string_lossy(), error);
+                                continue;
+                            }
+                        };
 
                         device_storage.locations.push(location);
                     }
